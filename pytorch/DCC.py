@@ -279,11 +279,12 @@ def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, fl
     for batch_idx, (inputs, targets) in enumerate(testloader):
         if use_cuda:
             inputs = inputs.cuda()
-        inputs_Var = Variable(inputs, volatile=True)
-        enc, dec = net(inputs_Var)
-        features += list(enc.data.cpu().numpy())
-        labels += list(targets)
-        original += list(inputs.cpu().numpy())
+        with torch.no_grad():
+            inputs_Var = Variable(inputs)
+            enc, dec = net(inputs_Var)
+            features += list(enc.data.cpu().numpy())
+            labels += list(targets)
+            original += list(inputs.cpu().numpy())
 
     original, features, labels = np.asarray(original).astype(np.float32), np.asarray(features).astype(np.float32), \
                                   np.asarray(labels)
@@ -315,6 +316,11 @@ def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, fl
     return features, U, change_in_assign, assignment
 
 def plot_to_image(U, title):
+    from umap import UMAP
+    if U.shape[-1] > 2:
+        umap_reducer = UMAP(n_components=2, **kwargs)
+        U = umap_reducer.fit_transform(U)
+    
     plt.clf()
     plt.scatter(U[:,0], U[:,1])
     plt.title(title)

@@ -2,4 +2,5 @@
 *.pyc
 __pychache__
 **/runs
-data
+data/*
+pytorch/.ipynb_checkpoints/*

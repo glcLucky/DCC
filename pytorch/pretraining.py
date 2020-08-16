@@ -53,9 +53,6 @@ def main(args):
         if not os.path.exists(loggin_dir):
             os.makedirs(loggin_dir)
         loggin_dir = os.path.join(loggin_dir, '%s' % (args.id))
-        if args.clean_log:
-            remove_files_in_dir(loggin_dir)
-        logger = Logger(loggin_dir)
 
     use_cuda = torch.cuda.is_available()
 
@@ -153,8 +150,8 @@ def pretrain(args, outputdir, params, use_cuda, trainloader, testloader, logger)
         print('\nIndex: %d \t Maxepoch: %d'%(index, maxepoch[index]))
 
         for epoch in range(maxepoch[index]):
-            scheduler.step()
             train(trainloader, net, index, optimizer, epoch, use_cuda, logger)
+            scheduler.step()
             test(testloader, net, index, epoch, use_cuda, logger)
             # Save checkpoint
             save_checkpoint({'epoch': epoch+1, 'state_dict': net.state_dict(), 'optimizer': optimizer.state_dict()},
@@ -200,8 +197,9 @@ def test(testloader, net, index, epoch, use_cuda, logger):
     for batch_idx, (inputs, targets) in enumerate(testloader):
         if use_cuda:
             inputs = inputs.cuda()
-        inputs_Var = Variable(inputs, volatile=True)
-        outputs = net(inputs_Var, index)
+        with torch.no_grad():
+            inputs_Var = Variable(inputs)
+            outputs = net(inputs_Var, index)
 
         # measure accuracy and record loss
         losses.update(outputs.item(), inputs.size(0))
