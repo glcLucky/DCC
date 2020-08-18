@@ -29,8 +29,11 @@ def load_data(filename, n_samples):
 def load_matdata(filename, n_samples):
     # TODO switch other loading to also use new X,Y convention instead of labels,data?
     data = sio.loadmat(filename)
-    labels = data['Y'][0:n_samples]
-    labels = np.squeeze(labels)
+    if 'Y' in data:
+        labels = data['Y'][0:n_samples]
+        labels = np.squeeze(labels)
+    else:
+        labels = []
     features = data['X'][0:n_samples]
     features = features.astype(np.float32, copy=False)
     # TODO figure out why we need to reshape this...

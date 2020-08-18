@@ -174,6 +174,9 @@ if __name__ == '__main__':
     random.seed(cfg.RNG_SEED)
 
     datadir = get_data_dir(args.db)
+    if not os.path.exists(datadir):
+        os.makedirs(datadir)
+
     strpath = osp.join(datadir, 'traindata.mat')
 
     if not os.path.exists(strpath):
