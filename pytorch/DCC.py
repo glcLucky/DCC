@@ -318,7 +318,7 @@ def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, fl
 def plot_to_image(U, title):
     from umap import UMAP
     if U.shape[-1] > 2:
-        umap_reducer = UMAP(n_components=2, **kwargs)
+        umap_reducer = UMAP(n_components=2)
         U = umap_reducer.fit_transform(U)
     
     plt.clf()

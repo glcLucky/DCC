@@ -85,6 +85,14 @@ def kNN(X, k, measure='euclidean'):
     X : [n_samples, n_dim] array
     k : int
         number of neighbors for each sample in X
+    Returns
+    -------
+    weights 
+    2d array: [the lengeth of X, 3] 
+    Like: 
+    [0, 10, 2.04]  # the distance is 2.04 from data point 0 to 10
+    [0, 16,  2.36] # the distance is 2.36 from data point 0 to 16
+    ...
     """
     from scipy.spatial import distance
 
@@ -115,6 +123,14 @@ def mkNN(X, k, measure='euclidean'):
     X : [n_samples, n_dim] array
     k : int
       number of neighbors for each sample in X
+    Returns
+    -------
+    weights 
+    2d array: [the lengeth of X, 3] 
+    Like: 
+    [0, 10, 2.04]  # the distance is 2.04 from data point 0 to 10
+    [0, 16,  2.36] # the distance is 2.36 from data point 0 to 16
+    ...
     """
     from scipy.spatial import distance
     from scipy.sparse import csr_matrix, triu, find
