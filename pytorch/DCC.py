@@ -32,6 +32,7 @@ parser.add_argument('--data', dest='db', type=str, default='mnist',
                     help='Name of the dataset. The name should match with the output folder name.')
 parser.add_argument('--batchsize', type=int, default=cfg.PAIRS_PER_BATCH, help='batch size used for Finetuning')
 parser.add_argument('--nepoch', type=int, default=500, help='maximum number of iterations used for Finetuning')
+parser.add_argument('--viz_method', type=str, default='')
 # By default M = 20 is used. For convolutional SDAE M=10 was used.
 # Similarly, for different NW architecture different value for M may be required.
 parser.add_argument('--M', type=int, default=20, help='inner number of epochs at which to change lambda')
@@ -175,7 +176,7 @@ def main(args, net=None):
             logger.log_value('lambda', _lambda, epoch)
 
         train(trainloader, net, optimizer, criterion1, criterion2, epoch, use_cuda, _sigma1, _sigma2, _lambda, logger)
-        Z, U, change_in_assign, assignment = test(testloader, net, criterion2, epoch, use_cuda, _delta, pairs, numeval, flag, logger)
+        Z, U, change_in_assign, assignment = test(testloader, net, criterion2, epoch, use_cuda, _delta, pairs, numeval, flag, logger, args.viz_method)
 
         if flag:
             # As long as the change in label assignment < threshold, DCC continues to run.
@@ -269,7 +270,7 @@ def train(trainloader, net, optimizer, criterion1, criterion2, epoch, use_cuda, 
 
 
 # Testing
-def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, flag, logger):
+def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, flag, logger, viz_method)):
     net.eval()
 
     original = []
@@ -295,7 +296,7 @@ def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, fl
     assignment = -np.ones(len(labels))
 
     if logger and epoch % 3 == 0:
-        logger.log_images('representatives', plot_to_image(U, 'representatives'), epoch)
+        logger.log_images('representatives', plot_to_image(U, 'representatives', viz_method), epoch)
 
     # logs clustering measures only if sigma2 has reached the minimum (delta2)
     if flag:
