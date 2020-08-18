@@ -315,11 +315,19 @@ def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, fl
 
     return features, U, change_in_assign, assignment
 
-def plot_to_image(U, title):
-    from umap import UMAP
+def plot_to_image(U, title, method='umap'):
+
     if U.shape[-1] > 2:
-        umap_reducer = UMAP(n_components=2)
-        U = umap_reducer.fit_transform(U)
+        if method == 'umap':
+            from umap import UMAP
+            umap_reducer = UMAP(n_components=2)
+            U = umap_reducer.fit_transform(U)
+        elif method == 'tsne':
+            from sklearn.manifold import TSNE
+            tsne_reducer = TSNE(n_components=2)
+            U = tsne_reducer.fit_transform(U)
+        else:
+            U = U[:, :2]
     
     plt.clf()
     plt.scatter(U[:,0], U[:,1])
