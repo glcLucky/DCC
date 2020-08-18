@@ -270,7 +270,7 @@ def train(trainloader, net, optimizer, criterion1, criterion2, epoch, use_cuda, 
 
 
 # Testing
-def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, flag, logger, viz_method)):
+def test(testloader, net, criterion, epoch, use_cuda, _delta, pairs, numeval, flag, logger, viz_method):
     net.eval()
 
     original = []
