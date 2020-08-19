@@ -176,7 +176,6 @@ if __name__ == '__main__':
     datadir = get_data_dir(args.db)
     if not os.path.exists(datadir):
         os.makedirs(datadir)
-
     strpath = osp.join(datadir, 'traindata.mat')
 
     if not os.path.exists(strpath):

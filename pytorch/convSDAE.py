@@ -47,13 +47,13 @@ class convSDAE(nn.Module):
         # initialization
         for m in self.modules():
             if isinstance(m, nn.Linear):
-                init.normal(m.weight, std=1e-2)
+                init.normal_(m.weight, std=1e-2)
                 if m.bias.data is not None:
-                    init.constant(m.bias, 0)
+                    init.constant_(m.bias, 0)
             elif isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-                init.kaiming_normal(m.weight, mode='fan_out')
+                init.kaiming_normal_(m.weight, mode='fan_out')
                 if m.bias.data is not None:
-                    init.constant(m.bias, 0)
+                    init.constant_(m.bias, 0)
 
     def forward(self,x,index):
         inp = x
