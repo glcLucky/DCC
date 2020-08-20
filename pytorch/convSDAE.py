@@ -14,7 +14,7 @@ class convSDAE(nn.Module):
         self.enc, self.dec = [], []
         self.benc, self.bdec = [], []
         for i in range(self.nlayers):
-            if i == self.nlayers - 1:
+            if i == self.nlayers - 1:  # 3
                 self.enc.append(nn.Linear(dim[i]*numpen*numpen, dim[i+1]))
                 self.benc.append(nn.BatchNorm2d(dim[i + 1]))
                 self.dec.append(nn.ConvTranspose2d(dim[i + 1], dim[i], kernel_size=numpen, stride=1))
@@ -58,8 +58,11 @@ class convSDAE(nn.Module):
     def forward(self,x,index):
         inp = x
         encoded = x
+
         for i, (encoder,bencoder) in enumerate(zip(self.enc, self.benc)):
             if i == self.nlayers-1:
+                if i == index:
+                    inp = encoded
                 encoded = encoded.view(encoded.size(0), -1)
             if i < index:
                 encoded = encoder(encoded)
@@ -68,7 +71,8 @@ class convSDAE(nn.Module):
                     encoded = bencoder(encoded)
                     encoded = F.leaky_relu(encoded, negative_slope=self.reluslope)
             if i == index:
-                inp = encoded
+                if i != self.nlayers-1:
+                    inp = encoded
                 out = encoded
                 if index:
                     out = self.dropmodule1(out)
@@ -80,19 +84,22 @@ class convSDAE(nn.Module):
             out = self.dropmodule2(out)
         if index >= self.nlayers:
             out = encoded
+        # import ipdb;ipdb.set_trace()
         for i, (decoder, bdecoder) in reversed(list(enumerate(zip(self.dec, self.bdec)))):
             if index >= self.nlayers-1 and i == self.nlayers-1:
                 out = out.view(out.size(0),-1,1,1)
-            if index >= self.nlayers:
+            if index >= self.nlayers:  # fine-tune in end-to-end after all layer are pretrained
                 out = decoder(out)
                 if i:
                     out = bdecoder(out)
                     out = F.leaky_relu(out, negative_slope=self.reluslope)
+                    # out = out.view(out.size(0), -1)
             if i == index:
                 out = decoder(out)
                 if index:
                     out = bdecoder(out)
                     out = F.leaky_relu(out, negative_slope=self.reluslope)
+        
         out = self.loss(out, inp)
         return out
 
