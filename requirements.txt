@@ -23,7 +23,7 @@ scipy==1.5.2
 seaborn==0.8
 sklearn==0.0
 statsmodels==0.10.1
-tensorboard==1.13.1
+tensorboard==2.3.0
 tensorboard-logger==0.1.0
 tensorflow==1.13.1
 tensorflow-estimator==1.13.0
